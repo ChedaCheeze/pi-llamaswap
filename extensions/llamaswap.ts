@@ -7,7 +7,7 @@
  * behaviour. No models.json is needed on each machine.
  *
  * Install:
- *   pi install git:github.com/<you>/pi-llamaswap
+ *   pi install git:github.com/ChedaCheeze/pi-llamaswap
  *
  * First run:
  *   /llamaswap login      # prompts for the API key, validates it, stores it in auth.json

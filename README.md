@@ -15,7 +15,7 @@ model. This extension registers a plain `openai-completions` provider instead.
 ## Install
 
 ```bash
-pi install git:github.com/<you>/pi-llamaswap
+pi install git:github.com/ChedaCheeze/pi-llamaswap
 ```
 
 Or try it without installing:
