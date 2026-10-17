@@ -1,0 +1,13 @@
+{
+  "name": "pi-llamaswap",
+  "version": "1.0.0",
+  "description": "Register a llama-swap server as a Pi model provider, discovering models from /v1/models",
+  "keywords": ["pi-package"],
+  "pi": {
+    "extensions": ["./extensions/llamaswap.ts"]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*"
+  }
+}
