@@ -264,7 +264,7 @@ export default async function (pi: ExtensionAPI) {
 					return;
 				}
 				try {
-				const models = buildModelConfigs(await fetchModels(key));
+					const models = buildModelConfigs(await fetchModels(key));
 					writeStoredKey(key);
 					apiKey = key;
 					keySource = authPath();
