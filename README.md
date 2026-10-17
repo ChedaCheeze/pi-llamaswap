@@ -24,15 +24,45 @@ Or try it without installing:
 pi -e ./extensions/llamaswap.ts
 ```
 
+## First run
+
+```
+/llamaswap login          # prompts for the API key
+/llamaswap login sk-...   # non-interactive form
+```
+
+The key is validated against the server before it is saved — a typo is never
+written to disk. It is stored in `<agent-dir>/auth.json` (normally
+`~/.pi/agent/auth.json`) under the `llamaswap` provider, which is where Pi keeps
+credentials, so every later session picks it up with no environment setup:
+
+```json
+{
+  "llamaswap": { "type": "api_key", "key": "sk-..." }
+}
+```
+
+`/llamaswap logout` removes that entry.
+
 ## Configure
+
+Both are optional; the key can come from `/llamaswap login` instead.
 
 ```bash
 export LLAMA_SWAP_URL=http://192.168.50.100:7000/v1   # default http://127.0.0.1:7000/v1
-export LLAMA_SWAP_KEY=sk-...                          # required if the server has apiKeys
+export LLAMA_SWAP_KEY=sk-...                          # optional, see below
 ```
 
-Then `/model` lists everything the swap knows about. `/llamaswap` prints each
-model's load state and context size.
+Resolution order: `LLAMA_SWAP_KEY`, then `auth.json`. If neither exists the
+extension sends no `Authorization` header, which works only when llama-swap has
+no `apiKeys` configured.
+
+`/llamaswap` prints the endpoint, where the key came from, and each model's load
+state and context size.
+
+Note: Pi resolves provider credentials from `auth.json` **before** shell
+environment variables, so once `/llamaswap login` has run the env var is no
+longer needed.
 
 ## Declaring thinking behaviour
 
@@ -85,22 +115,15 @@ Defaults when `metadata` is absent: `reasoning: true`, `maxTokens: 16384`,
 `contextWindow` from `context_length`, no thinking format (so `/thinking` has no
 effect on that model).
 
-## Gotcha
+## Gotchas
 
-Pi's `refreshModels` contract replaces the provider's catalog with whatever you
-return. Returning `[]` (for example when the swap is unreachable) **empties the
-model list**. The extension keeps a cached list and returns that on failure.
-
-## Credentials
-
-If `LLAMA_SWAP_KEY` is not set, the extension warns at load and sends no
-`Authorization` header. That works when the server has no `apiKeys`; against an
-authenticated server it 401s, and the error message says to set the variable.
-
-Note: Pi resolves credentials from `~/.pi/agent/auth.json` **before** shell
-environment variables, so for Pi's built-in providers the key must be in
-`auth.json` (or in `models.json` as `apiKey`). This extension reads
-`LLAMA_SWAP_KEY` directly.
+- Pi's `refreshModels` contract replaces the provider's catalog with whatever you
+  return. Returning `[]` (for example when the swap is unreachable) **empties the
+  model list**. The extension keeps a cached list and returns that on failure.
+- The extension writes `auth.json` directly. Pi has no extension-facing credential
+  write API, so this is a read-modify-write of the file (temp file + rename, mode
+  600) rather than Pi's own locked write path. Other providers in the file are
+  preserved.
 
 ## Files
 
